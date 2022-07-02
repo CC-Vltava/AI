@@ -6,7 +6,7 @@ COLOR_BLACK = -1
 COLOR_WHITE = 1
 COLOR_NONE = 0
 random.seed(0)
-
+#test
 posx = [-1, -1, -1, 0, 0, 0, 1, 1, 1]
 posy = [-1, 0, 1, -1, 0, 1, -1, 0, 1]
 
