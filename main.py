@@ -10,16 +10,13 @@ random.seed(0)
 posx = [-1, -1, -1, 0, 0, 1, 1, 1]
 posy = [-1, 0, 1, -1, 1, -1, 0, 1]
 
-range_x = 7
-range_y = 7
+
+def check_position_illegal(x, y, size):
+    return 0 <= x < size and 0 <= y < size
 
 
-def check_position_illegal(x, y):
-    return 0 <= x <= range_x and 0 <= y <= range_y
-
-
-def check_direction(chessboard, x, y, direction, b, w, color):
-    if not check_position_illegal(x, y):
+def check_direction(chessboard, x, y, direction, b, w, color, size):
+    if not check_position_illegal(x, y, size):
         return False
     if chessboard[x][y] == COLOR_NONE:
         return False
@@ -32,12 +29,12 @@ def check_direction(chessboard, x, y, direction, b, w, color):
         return b > 0
     if color == COLOR_BLACK and b == 2:
         return w > 0
-    return check_direction(chessboard, x + posx[direction], y + posx[direction], direction, b, w, color)
+    return check_direction(chessboard, x + posx[direction], y + posx[direction], direction, b, w, color, size)
 
 
-def check_pos(chessboard, x, y, color):
+def check_pos(chessboard, x, y, color, size):
     for i in range(8):
-        if check_direction(chessboard, x, y, i, 0, 0, color):
+        if check_direction(chessboard, x, y, i, 0, 0, color, size):
             return True
     return False
 
@@ -52,7 +49,7 @@ class AI(object):
         self.color = color
         # the max time you should use, your algorithm's run time must not exceed the time limit.
         self.time_out = time_out
-        # You need add your decision into your candidate_list. System will get the end of your candidate_list as your decision .
+        # You need add your decision into your candidate_list. System will get the end of your candidate_list as your decision.
         self.candidate_list = []
 
     # The input is current chessboard.
@@ -66,7 +63,7 @@ class AI(object):
         idx = list(zip(idx[0], idx[1]))
         for pos in idx:
             chessboard[pos[0]][pos[1]] = self.color
-            if check_pos(chessboard, pos[0], pos[1], self.color):
+            if check_pos(chessboard, pos[0], pos[1], self.color, self.chessboard_size):
                 self.candidate_list.append(pos)
             chessboard[pos[0]][pos[1]] = 0
 
@@ -77,8 +74,6 @@ class AI(object):
         # You need add all the positions which is valid
         # candidate_list example: [(3,3),(4,4)]
 
-
-
         # You need append your decision at the end of the candidate_list,
-        # we will pickthe last element of the candidate_list as the position you choose
+        # we will pick the last element of the candidate_list as the position you choose
         # If there is no valid position, you must return an empty list.
