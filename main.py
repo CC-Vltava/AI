@@ -6,9 +6,9 @@ COLOR_BLACK = -1
 COLOR_WHITE = 1
 COLOR_NONE = 0
 random.seed(0)
-#test
-posx = [-1, -1, -1, 0, 0, 0, 1, 1, 1]
-posy = [-1, 0, 1, -1, 0, 1, -1, 0, 1]
+
+posx = [-1, -1, -1, 0, 0, 1, 1, 1]
+posy = [-1, 0, 1, -1, 1, -1, 0, 1]
 
 range_x = 7
 range_y = 7
@@ -18,27 +18,26 @@ def check_position_illegal(x, y):
     return 0 <= x <= range_x and 0 <= y <= range_y
 
 
-def check_direction(chessboard, x, y, direction, b, w, sta):
+def check_direction(chessboard, x, y, direction, b, w, color):
     if not check_position_illegal(x, y):
         return False
-    if chessboard[x][y] == 0:
-        return 0
-    if chessboard[x][y] == 1:
-        w = w + 1
-    else:
+    if chessboard[x][y] == COLOR_NONE:
+        return False
+    if chessboard[x][y] == COLOR_BLACK:
         b = b + 1
-    if b + w == 1:
-        sta = chessboard[x][y]
-    if sta == 1 and w == 2:
+    else:
+        w = w + 1
+
+    if color == COLOR_WHITE and w == 2:
         return b > 0
-    if sta == -1 and b == 2:
+    if color == COLOR_BLACK and b == 2:
         return w > 0
-    return check_direction(chessboard, x + posx[direction], y + posx[direction], direction, b, w, sta)
+    return check_direction(chessboard, x + posx[direction], y + posx[direction], direction, b, w, color)
 
 
-def check_pos(chessboard, x, y):
+def check_pos(chessboard, x, y, color):
     for i in range(8):
-        if check_direction(chessboard, x, y, i, 0, 0, 0):
+        if check_direction(chessboard, x, y, i, 0, 0, color):
             return True
     return False
 
@@ -64,8 +63,13 @@ class AI(object):
         # Write your algorithm here
         # Here is the simplest sample:Random decision
         idx = np.where(chessboard == COLOR_NONE)
-
         idx = list(zip(idx[0], idx[1]))
+        for pos in idx:
+            chessboard[pos[0]][pos[1]] = self.color
+            if check_pos(chessboard, pos[0], pos[1], self.color):
+                self.candidate_list.append(pos)
+            chessboard[pos[0]][pos[1]] = 0
+
         # ==============Find new pos========================================
         # Make sure that the position of your decision in chess board is empty.
         # If not, the system will return error.
